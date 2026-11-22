@@ -121,77 +121,98 @@ Tant que le vrai fichier n'existe pas, on travaille avec un faux fichier au bon 
 
 ## 7. Délimitation de la zone d'étude (Plaine du Haouz)
 
-Le script `scripts/region/define_haouz_boundary.js` délimite automatiquement la plaine du Haouz à partir du MNT SRTM (élévation < 900 m, pente < 4°) et exporte le polygone comme asset GEE.
+Voir section 8 — Étape 4.
 
-**Étapes :**
-1. Ouvrir [code.earthengine.google.com](https://code.earthengine.google.com/)
-2. Copier-coller le contenu de `scripts/region/define_haouz_boundary.js`
-3. Remplacer `YOUR_GEE_PROJECT_ID` par votre propre projet GEE
-4. Cliquer **Run**, puis dans l'onglet **Tasks** lancer l'export `Haouz_Boundary`
-5. L'asset sera disponible sous `projects/YOUR_GEE_PROJECT_ID/assets/haouz_boundary`
+## 8. Installation et prise en main
 
-## 8. Extraction ERA5-Land
-
-### 8.1 Données journalières (par année)
-
-Le script `scripts/era5/extract_era5.py` extrait les 14 variables ERA5-Land en résolution journalière et exporte un CSV par année vers Google Drive.
-
-**Variables extraites :**
-
-| Nom court | Variable ERA5-Land | Agrégation |
-| --- | --- | --- |
-| T2M_K | temperature_2m | — |
-| T2M_MAX_K | temperature_2m_max | — |
-| T2M_MIN_K | temperature_2m_min | — |
-| T2M_DEW_K | dewpoint_temperature_2m | — |
-| TP_M | total_precipitation_sum | — |
-| PET_M | potential_evaporation_sum | — |
-| U10 | u_component_of_wind_10m | — |
-| V10 | v_component_of_wind_10m | — |
-| PS_PA | surface_pressure | — |
-| SWVL1 | volumetric_soil_water_layer_1 (0-7cm) | — |
-| SWVL2 | volumetric_soil_water_layer_2 (7-28cm) | — |
-| SWVL3 | volumetric_soil_water_layer_3 (28-100cm) | — |
-| SWVL4 | volumetric_soil_water_layer_4 (100-289cm) | — |
-| SSRD_J_M2 | surface_solar_radiation_downwards_sum | — |
-
-```bash
-# Une seule année
-python scripts/era5/extract_era5.py --year 1981
-
-# Toutes les années d'un coup
-python scripts/era5/extract_era5.py --year 1981 --end_year 2025
-```
-
-Les CSV sont exportés dans Google Drive sous `DroughtProject_ERA5Land/era5land_haouz_{year}.csv`. Suivre l'avancement sur [GEE Tasks](https://code.earthengine.google.com/tasks). Une fois terminé, télécharger les fichiers dans `data/raw/era5/`.
-
-### 8.2 Données mensuelles (dataset final — recommandé)
-
-Le script `scripts/era5/monthly/extract_era5_monthly.py` agrège les données en mensuel et exporte **un seul CSV** couvrant 1981-2025 (~528 lignes).
-
-Règles d'agrégation :
-- **Somme** : TP_M, PET_M, SSRD_J_M2
-- **Moyenne** : toutes les autres variables
-
-```bash
-python scripts/era5/monthly/extract_era5_monthly.py
-
-# Ou avec des années personnalisées
-python scripts/era5/monthly/extract_era5_monthly.py --start_year 1981 --end_year 2025
-```
-
-Fichier produit : `DroughtProject_ERA5Land/era5land_haouz_monthly_1981_2025.csv`. Une fois téléchargé, le placer dans `data/raw/era5/`.
-
-## 8. Installation
+### Étape 1 — Cloner le dépôt et installer les dépendances
 
 ```bash
 git clone https://github.com/MarouaID/projet-secheresse.git
 cd projet-secheresse
 python -m venv .venv
-.venv\Scripts\activate            # Windows (Mac/Linux : source .venv/bin/activate)
+.venv\Scripts\activate            # Windows
+# source .venv/bin/activate       # Mac / Linux
 python -m pip install -r requirements.txt
-python -m pytest
 ```
+
+### Étape 2 — Configurer votre projet Google Earth Engine
+
+Chaque membre de l'équipe doit avoir son propre projet GEE. Si ce n'est pas encore fait, créer un projet sur [earthengine.google.com](https://earthengine.google.com/).
+
+Copier le fichier de configuration et renseigner votre projet :
+
+```bash
+# Windows
+copy config\gee_config.yaml.example config\gee_config.yaml
+
+# Mac / Linux
+cp config/gee_config.yaml.example config/gee_config.yaml
+```
+
+Ouvrir `config/gee_config.yaml` et remplacer les valeurs :
+
+```yaml
+gee:
+  project: "votre-projet-gee"                                    # ex: drought-515513
+  haouz_asset: "projects/votre-projet-gee/assets/haouz_boundary" # après export de la géométrie
+```
+
+> `gee_config.yaml` est dans `.gitignore` — vos informations personnelles ne seront jamais poussées sur GitHub.
+
+### Étape 3 — Tester la connexion GEE
+
+Ce script vérifie que votre projet GEE est bien configuré et que la collection ERA5-Land est accessible.
+
+```bash
+python scripts/gee_connection.py
+```
+
+Résultat attendu :
+```
+Connexion réussie !
+Bandes disponibles : ['dewpoint_temperature_2m', 'temperature_2m', ...]
+```
+
+### Étape 4 — Délimiter la zone d'étude (Plaine du Haouz)
+
+Avant d'extraire les données, chaque membre doit créer l'asset `haouz_boundary` dans son propre projet GEE. Cet asset représente le polygone de la plaine du Haouz délimité automatiquement à partir du MNT SRTM (élévation < 900 m, pente < 4°).
+
+1. Ouvrir [code.earthengine.google.com](https://code.earthengine.google.com/)
+2. Copier-coller le contenu de `scripts/region/define_haouz_boundary.js`
+3. Remplacer `YOUR_GEE_PROJECT_ID` par votre projet GEE
+4. Cliquer **Run**, puis dans l'onglet **Tasks** lancer l'export `Haouz_Boundary`
+5. Une fois terminé, mettre à jour `haouz_asset` dans votre `gee_config.yaml`
+
+### Étape 5 — Extraire les données ERA5-Land
+
+Deux options selon le besoin :
+
+**Option A — Données journalières** (une tâche par année, CSV séparés)
+
+Utile si vous avez besoin de la résolution journalière pour des analyses spécifiques.
+
+```bash
+# Une seule année
+python scripts/era5/extract_era5.py --year 1981
+
+# Toutes les années d'un coup (45 tâches GEE lancées en parallèle)
+python scripts/era5/extract_era5.py --year 1981 --end_year 2025
+```
+
+Fichiers produits dans Google Drive : `DroughtProject_ERA5Land/era5land_haouz_{year}.csv`
+
+**Option B — Données mensuelles (recommandée)** (une seule tâche, un seul CSV)
+
+C'est le dataset principal du projet. Les données sont agrégées par mois sur toute la période 1981-2025, ce qui donne ~528 lignes et 16 colonnes. Les précipitations, l'évaporation et le rayonnement sont sommés sur le mois ; toutes les autres variables sont moyennées.
+
+```bash
+python scripts/era5/monthly/extract_era5_monthly.py
+```
+
+Fichier produit dans Google Drive : `DroughtProject_ERA5Land/era5land_haouz_monthly_1981_2025.csv`
+
+Suivre l'avancement des tâches sur [GEE Tasks](https://code.earthengine.google.com/tasks). Une fois terminé, télécharger le fichier et le placer dans `data/raw/era5/`.
 
 ## 9. Sources de données
 
