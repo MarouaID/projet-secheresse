@@ -2,4 +2,5 @@
 # cp config/gee_config.yaml.example config/gee_config.yaml
 
 gee:
-  project: "your-gee-project-id"
+  project: "your-gee-project-id"   # ex: drought-515513
+  haouz_asset: "projects/your-gee-project-id/assets/haouz_boundary"
