@@ -1,3 +1,34 @@
+# Environnement Python
 .venv/
-data/raw/
 __pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Données brutes (trop lourdes pour Git)
+data/raw/*
+data/exports/*
+!data/raw/.gitkeep
+!data/exports/.gitkeep
+
+# Données traitées (générées par les scripts)
+data/processed/*
+!data/processed/.gitkeep
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Credentials / clés API (NE JAMAIS committer)
+*.env
+.env
+config/secrets.yaml
