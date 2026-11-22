@@ -1,0 +1,5 @@
+# Copier ce fichier en gee_config.yaml et remplir avec ton projet GEE
+# cp config/gee_config.yaml.example config/gee_config.yaml
+
+gee:
+  project: "your-gee-project-id"
