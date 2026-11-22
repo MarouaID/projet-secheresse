@@ -130,6 +130,58 @@ Le script `scripts/region/define_haouz_boundary.js` délimite automatiquement la
 4. Cliquer **Run**, puis dans l'onglet **Tasks** lancer l'export `Haouz_Boundary`
 5. L'asset sera disponible sous `projects/YOUR_GEE_PROJECT_ID/assets/haouz_boundary`
 
+## 8. Extraction ERA5-Land
+
+### 8.1 Données journalières (par année)
+
+Le script `scripts/era5/extract_era5.py` extrait les 14 variables ERA5-Land en résolution journalière et exporte un CSV par année vers Google Drive.
+
+**Variables extraites :**
+
+| Nom court | Variable ERA5-Land | Agrégation |
+| --- | --- | --- |
+| T2M_K | temperature_2m | — |
+| T2M_MAX_K | temperature_2m_max | — |
+| T2M_MIN_K | temperature_2m_min | — |
+| T2M_DEW_K | dewpoint_temperature_2m | — |
+| TP_M | total_precipitation_sum | — |
+| PET_M | potential_evaporation_sum | — |
+| U10 | u_component_of_wind_10m | — |
+| V10 | v_component_of_wind_10m | — |
+| PS_PA | surface_pressure | — |
+| SWVL1 | volumetric_soil_water_layer_1 (0-7cm) | — |
+| SWVL2 | volumetric_soil_water_layer_2 (7-28cm) | — |
+| SWVL3 | volumetric_soil_water_layer_3 (28-100cm) | — |
+| SWVL4 | volumetric_soil_water_layer_4 (100-289cm) | — |
+| SSRD_J_M2 | surface_solar_radiation_downwards_sum | — |
+
+```bash
+# Une seule année
+python scripts/era5/extract_era5.py --year 1981
+
+# Toutes les années d'un coup
+python scripts/era5/extract_era5.py --year 1981 --end_year 2025
+```
+
+Les CSV sont exportés dans Google Drive sous `DroughtProject_ERA5Land/era5land_haouz_{year}.csv`. Suivre l'avancement sur [GEE Tasks](https://code.earthengine.google.com/tasks). Une fois terminé, télécharger les fichiers dans `data/raw/era5/`.
+
+### 8.2 Données mensuelles (dataset final — recommandé)
+
+Le script `scripts/era5/monthly/extract_era5_monthly.py` agrège les données en mensuel et exporte **un seul CSV** couvrant 1981-2025 (~528 lignes).
+
+Règles d'agrégation :
+- **Somme** : TP_M, PET_M, SSRD_J_M2
+- **Moyenne** : toutes les autres variables
+
+```bash
+python scripts/era5/monthly/extract_era5_monthly.py
+
+# Ou avec des années personnalisées
+python scripts/era5/monthly/extract_era5_monthly.py --start_year 1981 --end_year 2025
+```
+
+Fichier produit : `DroughtProject_ERA5Land/era5land_haouz_monthly_1981_2025.csv`. Une fois téléchargé, le placer dans `data/raw/era5/`.
+
 ## 8. Installation
 
 ```bash
