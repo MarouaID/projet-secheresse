@@ -119,7 +119,18 @@ Tant que le vrai fichier n'existe pas, on travaille avec un faux fichier au bon 
 - **`cultures.csv`** : `culture, stade, kc, duree_jours, ky_saison, source`
 - **`animaux.csv`** : `animal, variante, litres_par_jour, facteur_chaleur, source`
 
-## 7. Installation
+## 7. Délimitation de la zone d'étude (Plaine du Haouz)
+
+Le script `scripts/region/define_haouz_boundary.js` délimite automatiquement la plaine du Haouz à partir du MNT SRTM (élévation < 900 m, pente < 4°) et exporte le polygone comme asset GEE.
+
+**Étapes :**
+1. Ouvrir [code.earthengine.google.com](https://code.earthengine.google.com/)
+2. Copier-coller le contenu de `scripts/region/define_haouz_boundary.js`
+3. Remplacer `YOUR_GEE_PROJECT_ID` par votre propre projet GEE
+4. Cliquer **Run**, puis dans l'onglet **Tasks** lancer l'export `Haouz_Boundary`
+5. L'asset sera disponible sous `projects/YOUR_GEE_PROJECT_ID/assets/haouz_boundary`
+
+## 8. Installation
 
 ```bash
 git clone https://github.com/MarouaID/projet-secheresse.git
@@ -130,6 +141,6 @@ python -m pip install -r requirements.txt
 python -m pytest
 ```
 
-## 8. Sources de données
+## 9. Sources de données
 
 CHIRPS (pluie), NASA POWER (température, rayonnement, humidité, vent), indice NAO (NOAA), frontières administratives (HCP ou OpenStreetMap, à vérifier), FAO Paper 56 (Kc, durée des stades), FAO Paper 66 (Ky). Optionnel : taux de remplissage des barrages, MODIS NDVI, ERA5-Land.
