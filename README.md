@@ -192,6 +192,25 @@ Deux options selon le besoin :
 
 Utile si vous avez besoin de la résolution journalière pour des analyses spécifiques.
 
+**Variables extraites :**
+
+| Nom court | Variable ERA5-Land | Agrégation mensuelle |
+| --- | --- | --- |
+| T2M_K | temperature_2m | moyenne |
+| T2M_MAX_K | temperature_2m_max | moyenne |
+| T2M_MIN_K | temperature_2m_min | moyenne |
+| T2M_DEW_K | dewpoint_temperature_2m | moyenne |
+| TP_M | total_precipitation_sum | somme |
+| PET_M | potential_evaporation_sum | somme |
+| U10 | u_component_of_wind_10m | moyenne |
+| V10 | v_component_of_wind_10m | moyenne |
+| PS_PA | surface_pressure | moyenne |
+| SWVL1 | volumetric_soil_water_layer_1 (0–7 cm) | moyenne |
+| SWVL2 | volumetric_soil_water_layer_2 (7–28 cm) | moyenne |
+| SWVL3 | volumetric_soil_water_layer_3 (28–100 cm) | moyenne |
+| SWVL4 | volumetric_soil_water_layer_4 (100–289 cm) | moyenne |
+| SSRD_J_M2 | surface_solar_radiation_downwards_sum | somme |
+
 ```bash
 # Une seule année
 python scripts/era5/extract_era5.py --year 1981
