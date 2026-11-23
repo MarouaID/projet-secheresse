@@ -81,8 +81,11 @@ def build_monthly_collection(
     end_year: int,
 ) -> ee.FeatureCollection:
 
-    months = ee.List.sequence(1, 12)
-    years  = ee.List.sequence(start_year, end_year)
+    year_month_pairs = [
+        [y, m]
+        for y in range(start_year, end_year + 1)
+        for m in range(1, 13)
+    ]
 
     def process_month(y_m):
         y_m   = ee.List(y_m)
@@ -115,9 +118,7 @@ def build_monthly_collection(
 
         return ee.Feature(None, stats).set({"YEAR": year, "MONTH": month})
 
-    year_month_pairs = years.map(lambda y: months.map(lambda m: ee.List([y, m]))).flatten()
-
-    return ee.FeatureCollection(year_month_pairs.map(process_month))
+    return ee.FeatureCollection(ee.List(year_month_pairs).map(process_month))
 
 
 # ==========================================
